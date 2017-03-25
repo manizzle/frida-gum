@@ -66,10 +66,14 @@ _gum_duk_stalker_init (GumDukStalker * self,
 
   _gum_duk_store_module_data (ctx, "stalker", self);
 
+  // [self]
   duk_push_c_function (ctx, gumjs_stalker_construct, 0);
+  // [self, gumjs_stalker_construct]
   duk_push_object (ctx);
+  // [self, gumjs_stalker_construct, obj]
   duk_put_function_list (ctx, -1, gumjs_stalker_functions);
   duk_put_prop_string (ctx, -2, "prototype");
+
   duk_new (ctx, 0);
   _gum_duk_add_properties_to_class_by_heapptr (ctx,
       duk_require_heapptr (ctx, -1), gumjs_stalker_values);
@@ -121,6 +125,26 @@ GUMJS_DEFINE_CONSTRUCTOR (gumjs_stalker_construct)
 
   return 0;
 }
+
+GUMJS_DEFINE_FUNCTION (gumjs_stalker_garbage_collect)
+{
+  GumStalker * stalker = _gum_duk_stalker_get (gumjs_stalker_from_args (args));
+
+  gumjs_stalker_garbage_collect (stalker);
+}
+
+GUMJS_DEFINE_FUNCTION (gumjs_stalker_follow)
+{
+  GumThreadId thread_id;
+  GMainContext * main_context = gum_script_scheduler_get_js_context (args->core->scheduler);
+  GumDukStalker * module = gumjs_stalker_from_args (args);
+
+  auto sink = module->sink;
+  module->sink = NULL;
+  gum_stalker_follow (_gum_duk_stalker_get (module), thread_id, sink);
+
+
+
 
 GUMJS_DEFINE_GETTER (gumjs_stalker_get_trust_threshold)
 {
