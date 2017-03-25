@@ -130,7 +130,7 @@ GUMJS_DEFINE_FUNCTION (gumjs_stalker_garbage_collect)
 {
   GumStalker * stalker = _gum_duk_stalker_get (gumjs_stalker_from_args (args));
 
-  gumjs_stalker_garbage_collect (stalker);
+  gum_stalker_garbage_collect (stalker);
 }
 
 GUMJS_DEFINE_FUNCTION (gumjs_stalker_follow)
